@@ -1,0 +1,148 @@
+programa final
+procesos
+  proceso jyc( ES flores:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      flores:=flores+1    
+  fin
+  proceso rando( ES avenida:numero ES calle:numero)
+  variables
+    ave: numero cal:numero
+  comenzar   
+    Random(ave, 10,75)
+    Random(cal, 10,40)
+    avenida:=ave
+    calle:=cal
+  fin
+areas
+  area1: AreaC(10,10,75,40)
+  depos: AreaPC(100,1,100,1)
+  jefea: AreaP(50,50,50,50)
+  ci1: AreaP(6,8,6,8)
+  ci2: AreaP(8,8,8,8)
+  ci3: AreaP(10,8,10,8)
+  se1: AreaP(99,99,99,99)
+  se2: AreaP(99,100,99,100)
+  ase: AreaC(1,1,1,100)
+robots
+  robot cosechadora
+  variables
+    avenida, calle , aveaux, calaux, id, flores,calleInicial,avenidaInicial:numero
+  comenzar
+    flores:=0
+    calleInicial:=PosCa
+    avenidaInicial:=PosAv   
+    rando(avenida,calle)
+    BloquearEsquina(avenida,calle)
+    Pos(avenida,calle){-------------------------1}
+    aveaux:=avenida
+    calaux:=calle
+    jyc(flores)
+    repetir 4
+      rando(avenida,calle)
+      BloquearEsquina(avenida,calle)
+      Pos(avenida,calle) {-----------------------------2,3,4,5}
+      LiberarEsquina(aveaux,calaux) 
+      jyc(flores)
+      aveaux:=avenida
+      calaux:=calle 
+    Informar(flores)
+    BloquearEsquina( 100,1)
+    Pos(100,1)
+    LiberarEsquina(avenida,calle)
+    mientras(HayFlorEnLaBolsa)
+      depositarFlor
+    EnviarMensaje(flores, jefe1) 
+    Pos(avenidaInicial,calleInicial)
+    LiberarEsquina(100,1)           
+  fin 
+  robot jefe
+  variables
+    totalflores, florR,papel1,papel2:numero okay,fin1,fin2:boolean
+  comenzar
+    totalflores:=0
+    okay:=V
+    repetir 3
+      RecibirMensaje(florR, *)
+      totalflores:=totalflores + florR
+    Informar(totalflores)
+    EnviarMensaje(okay, semb1)
+    EnviarMensaje(okay, semb2)
+    RecibirMensaje(papel1, semb1)
+    RecibirMensaje(papel2, semb2)
+    RecibirMensaje(fin1, semb1)
+    RecibirMensaje(fin2, semb2)
+    si(papel1>papel2)
+      Informar('recolecto_menos_semb2',V)
+    sino
+      si(papel2>papel1)
+        Informar('recolecto_menos_semb1',V)
+  fin
+  robot sembradores
+  variables
+    ok:boolean sem:boolean final:boolean calle papeles,calleInicial,avenidaInicial:numero
+  comenzar
+    calleInicial:=PosCa
+    avenidaInicial:=PosAv
+    sem:=F
+    final:=F
+    RecibirMensaje(ok, jefe1)
+    mientras(ok)
+      BloquearEsquina(100,1)
+      Pos(100,1)
+      si(sem)
+        LiberarEsquina(1, calle)
+      si(HayFlorEnLaEsquina)
+        sem:=V
+        tomarFlor
+        Random(calle, 1,100)
+        BloquearEsquina(1, calle)
+        Pos(1,calle)
+        LiberarEsquina(100,1)
+        depositarFlor
+        mientras(HayPapelEnLaEsquina)
+          tomarPapel
+          papeles:=papeles+1
+        mientras(HayFlorEnLaEsquina)
+          tomarFlor
+        depositarFlor
+      sino
+        ok:=F
+    EnviarMensaje(papeles, jefe1)
+    final:=V
+    EnviarMensaje(final, jefe1)
+    Pos(avenidaInicial,calleInicial)
+    LiberarEsquina(100,1)    
+  fin
+variables
+  semb1: sembradores
+  semb2: sembradores
+  cose1: cosechadora
+  cose2: cosechadora
+  cose3: cosechadora
+  jefe1: jefe
+comenzar
+  AsignarArea(semb1, ase)
+  AsignarArea(semb2, ase)
+  AsignarArea(semb1, se1)
+  AsignarArea(semb2, se2)
+  AsignarArea(semb1, depos)
+  AsignarArea(semb2, depos)
+  AsignarArea(jefe1,jefea)
+  AsignarArea(cose1,area1)
+  AsignarArea(cose2,area1)
+  AsignarArea(cose3,area1)
+  AsignarArea(cose1,ci1)
+  AsignarArea(cose2,ci2)
+  AsignarArea(cose3,ci3)
+  AsignarArea(cose1,depos)
+  AsignarArea(cose2,depos)
+  AsignarArea(cose3,depos)
+  Iniciar(semb1, 99,99)
+  Iniciar(semb2, 99,100)
+  Iniciar(jefe1,50,50)
+  Iniciar(cose1,6,8)
+  Iniciar(cose2,8,8)
+  Iniciar(cose3,10,8)
+fin
